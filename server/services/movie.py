@@ -70,3 +70,17 @@ def get_movie_by_id(db: Session, movie_id: int):
     if not db_movie:
         raise HTTPException(status_code=404, detail="Movie not found or already deleted")
     return db_movie
+
+def update_movie(db: Session, movie_id: int, updated_movie: MovieSchema):
+    db_movie = db.query(Movie).filter(Movie.id == movie_id, Movie.deleted == False).first()
+    if not db_movie:
+        raise HTTPException(status_code=404, detail="Movie not found")
+
+    movie_data = updated_movie.dict(exclude_unset=True)
+    for key, value in movie_data.items():
+        setattr(db_movie, key, value)
+    
+    db.commit()
+    db.refresh(db_movie)
+    
+    return db_movie    
