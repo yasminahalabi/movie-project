@@ -3,9 +3,14 @@ from datetime import datetime
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from models.Movies import Movie
+from models.Genres import Genre
+
  
 def get_movies_from_db(db:Session):
     return db.query (Movie).filter(Movie.deleted == False).all()  # מציג רק סרטים שלא נמחקו
+
+def get_movies_from_db_by_genre(db: Session, genre: int):
+    return db.query(Movie).filter(Movie.genre_ids.contains([genre]), Movie.deleted == False).all()
 
 # def add_movie(db: Session, movie: MovieSchema):
 #     db_movie = Movie(
@@ -95,7 +100,8 @@ def get_movie_by_id(db: Session, movie_id: int):
     db_movie = db.query(Movie).filter(Movie.id == movie_id, Movie.deleted == False).first()
     if not db_movie:
         raise HTTPException(status_code=404, detail="Movie not found or already deleted")
-    return db_movie
+    genre_names = db.query(Genre).filter(Genre.id.in_(db_movie.genre_ids)).all()
+    return db_movie, genre_names 
 
 def update_movie(db: Session, movie_id: int, updated_movie: MovieSchema):
     db_movie = db.query(Movie).filter(Movie.id == movie_id, Movie.deleted == False).first()

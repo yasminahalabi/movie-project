@@ -1,4 +1,4 @@
-from fastapi import APIRouter , HTTPException , Depends
+from fastapi import APIRouter , HTTPException , Depends ,  Query
 from pydantic import BaseModel
 from typing import Optional ,List
 from services.movie import get_movies_from_db , add_movie , soft_delete_movie, permanent_delete_movie ,get_movie_by_id, update_movie
@@ -10,8 +10,16 @@ router = APIRouter()
 
 
 @router.get("/")
-def get_movies_route (db: Session = Depends (get_db)):
+def get_movies_route(db: Session = Depends(get_db), genre: Optional[int] = Query(None)):
+    if genre:
+        return get_movies_from_db_by_genre(db, genre)
     return get_movies_from_db(db)
+
+def get_movies_from_db_by_genre(db: Session, genre: int):
+    movies = db.query(Movie).filter(Movie.genre_ids.contains([genre]), Movie.deleted == False).all()
+    if not movies:
+        raise HTTPException(status_code=404, detail="No movies found for this genre")
+    return movies
 # @router.get("/")
 # def get_movies_route(db: Session = Depends(get_db)):
 #     try:
@@ -57,44 +65,9 @@ def permanent_delete_route(movie_id: int, db: Session = Depends(get_db)):
 def get_movie_route(movie_id: int, db: Session = Depends(get_db)):
     return get_movie_by_id(db, movie_id)
 
-# @router.put("/{movie_id}")
-# async def update_movie(movie_id: int, Session = Depends(get_db)):
-#     for idx, movie in enumerate (mockmovies):
-#         if movie.id == movie_id:
-#             mockmovies [idx] = updated_movie
-#             return {"message": "Movie updated successfully"}
-#     return {"error": "Movie not found"}
-
-# @app.('/movies/<int:id>', methods=['PUT'])
-# def update_movie(id):
-#     movie = Movie.query.get_or_404(id)
-#     data = request.get_json()
-
-#     movie.title = data['title']
-#     movie.release_year = data['releaseYear']
-#     movie.director = data['director']
-
-#     db.session.commit()
-
-
-    # return jsonify(movie.to_dict())
-# @router.put("/{movie_id}")
-# async def update_movie(movie_id: int, updated_movie: MovieSchema, db: Session = Depends(get_db)):
-#     movie = get_movie_by_id(db, movie_id)
-#     if not movie:
-#         raise HTTPException(status_code=404, detail="Movie not found")
-    
-#     # Update movie attributes from the request
-#     movie_data = updated_movie.dict(exclude_unset=True)
-#     for key, value in movie_data.items():
-#         setattr(movie, key, value)
-    
-#     db.commit()
-#     db.refresh(movie)
-    
-#     return {"message": "Movie updated successfully", "movie": movie}
-
 @router.put("/{movie_id}")
 async def update_movie_route(movie_id: int, updated_movie: MovieSchema, db: Session = Depends(get_db)):
     movie = update_movie(db, movie_id, updated_movie)
     return {"message": "Movie updated successfully", "movie": movie}
+
+   

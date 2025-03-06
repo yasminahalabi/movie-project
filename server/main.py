@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from routes.movies import router as movie_router
+from routes.genres import router as genre_router
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -30,3 +31,4 @@ async def welcome():
 #     return await get_movies()
 
 app.include_router(movie_router , prefix="/movies")
+app.include_router(genre_router, prefix="/genres")
