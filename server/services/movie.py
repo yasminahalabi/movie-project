@@ -7,28 +7,54 @@ from models.Movies import Movie
 def get_movies_from_db(db:Session):
     return db.query (Movie).filter(Movie.deleted == False).all()  # מציג רק סרטים שלא נמחקו
 
-def add_movie(db: Session, movie: MovieSchema):
-    db_movie = Movie(
-        title=movie.title,
-        description=movie.description,
-        release_date=movie.release_date,
-        url_image=movie.url_image,
-        duration=movie.duration,
-        genre_ids=movie.genre_ids,
-        actors=movie.actors,
-        director=movie.director,
-        language=movie.language,
-        rating=movie.rating,
-        star_rating=movie.star_rating,
-        awards=movie.awards,
-        age_restriction=movie.age_restriction,
-        watchurl=movie.watchurl,
-    )
-    db.add(db_movie)
-    db.commit()
-    db.refresh(db_movie)
-    return db_movie
+# def add_movie(db: Session, movie: MovieSchema):
+#     db_movie = Movie(
+#         title=movie.title,
+#         description=movie.description,
+#         release_date=movie.release_date,
+#         url_image=movie.url_image,
+#         duration=movie.duration,
+#         genre_ids=movie.genre_ids,
+#         actors=movie.actors,
+#         director=movie.director,
+#         language=movie.language,
+#         rating=movie.rating,
+#         star_rating=movie.star_rating,
+#         awards=movie.awards,
+#         age_restriction=movie.age_restriction,
+#         watchurl=movie.watchurl,
+#     )
+#     print(db.execute("SELECT current_database();").fetchone())
+#     db.add(db_movie)
+#     db.commit()
+#     db.refresh(db_movie)
+#     return db_movie
 
+def add_movie(db: Session, movie: MovieSchema):
+    try:
+        db_movie = Movie(
+            title=movie.title,
+            description=movie.description,
+            release_date=movie.release_date,
+            url_image=movie.url_image,
+            duration=movie.duration,
+            genre_ids=movie.genre_ids,
+            actors=movie.actors,
+            director=movie.director,
+            language=movie.language,
+            rating=movie.rating,
+            star_rating=movie.star_rating,
+            awards=movie.awards,
+            age_restriction=movie.age_restriction,
+            watchurl=movie.watchurl,
+        )
+        db.add(db_movie)
+        db.commit()
+        db.refresh(db_movie)
+        return db_movie
+    except Exception as e:
+        print(f"Error adding movie: {e}")
+        raise HTTPException(status_code=500, detail="Error occurred while adding the movie")
 
 
 # def update_movie(db: Session, movie_id: int, updated_movie: MovieSchema):

@@ -5,7 +5,7 @@ import os
 
 DATABASE_URL = os.getenv("DATABASE_URL","postgresql://postgres:Pa55w.rd@db:5435/movies_db")
 
-engine = create_engine (DATABASE_URL)
+engine = create_engine (DATABASE_URL , echo=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
@@ -17,4 +17,3 @@ def get_db ():
         db.close()
 
 
-get_db()
