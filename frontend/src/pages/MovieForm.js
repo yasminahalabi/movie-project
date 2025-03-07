@@ -5,6 +5,11 @@ import * as Yup from "yup";
 import axios from "axios";
 import { useQuery , useMutation, useQueryClient } from '@tanstack/react-query'
 
+const fetchGenres = async () => {
+    const res = await axios.get("http://localhost:8000/genres"); // כאן צריך להיות ה-API שמחזיר את הז'אנרים
+    return res.data;
+};
+
 const fetchMovie = async (movieId) => {
     const res = await axios.get(`http://localhost:8000/movies/${movieId}`);
     return res.data;
@@ -38,34 +43,39 @@ const MovieForm = () => {
     const isEditMode = Boolean(id);
     const queryClient = useQueryClient();
 
+    const { data: genres } = useQuery({
+        queryKey: ["genres"],
+        queryFn: fetchGenres,
+    });
+
     const { data: movieData } = useQuery({
     queryKey: ["movie", id],
     queryFn: () => fetchMovie(id),
     enabled: isEditMode,
 });
 
-const mockGenres = [
-    { id: 1, name: 'Sci-fi' },
-    { id: 2, name: 'Comedy' },
-    { id: 3, name: 'Drama' },
-    { id: 4, name: 'Action' },
-    { id: 5, name: 'Animation' },
-    { id: 6, name: 'Adventure' },
-    { id: 7, name: 'Musical' },
-    { id: 8, name: 'Family' },
-    { id: 9, name: 'Fantasy' },
-    { id: 10, name: 'Horror' },
-    { id: 11, name: 'Thriller' },
-    { id: 12, name: 'Mystery' },
-    { id: 13, name: 'Crime' },
-    { id: 14, name: 'Romance' },
-    { id: 15, name: 'Western' },
-    { id: 16, name: 'History' },
-    { id: 17, name: 'War' },
-    { id: 18, name: 'Documentary' },
-    { id: 19, name: 'Sport' },
-    { id: 20, name: 'Biography' },
-];
+// const mockGenres = [
+//     { id: 1, name: 'Sci-fi' },
+//     { id: 2, name: 'Comedy' },
+//     { id: 3, name: 'Drama' },
+//     { id: 4, name: 'Action' },
+//     { id: 5, name: 'Animation' },
+//     { id: 6, name: 'Adventure' },
+//     { id: 7, name: 'Musical' },
+//     { id: 8, name: 'Family' },
+//     { id: 9, name: 'Fantasy' },
+//     { id: 10, name: 'Horror' },
+//     { id: 11, name: 'Thriller' },
+//     { id: 12, name: 'Mystery' },
+//     { id: 13, name: 'Crime' },
+//     { id: 14, name: 'Romance' },
+//     { id: 15, name: 'Western' },
+//     { id: 16, name: 'History' },
+//     { id: 17, name: 'War' },
+//     { id: 18, name: 'Documentary' },
+//     { id: 19, name: 'Sport' },
+//     { id: 20, name: 'Biography' },
+// ];
     
     const movieForm = useFormik({
         initialValues: {
@@ -165,7 +175,7 @@ const mockGenres = [
                 <div style={styles.formField}>
                     <label style={styles.label}>Genres</label>
                     <div style={styles.checkboxGroup}>
-                        {mockGenres.map((g) => (
+                        {genres?.map((g) => (
                             <label key={g.id} style={styles.checkboxLabel}>
                                 <input
                                 type="checkbox"

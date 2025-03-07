@@ -14,6 +14,9 @@ const NavBar = () => {
         <li style={styles.navItem}>
           <Link to="/list" style={styles.navLink}>Movies</Link>
         </li>
+        <li style={styles.navItem}>
+          <Link to="/genres" style={styles.navLink}>Genres</Link>
+        </li>
       </ul>
     </nav>
   );

@@ -1,10 +1,12 @@
-from fastapi import APIRouter , HTTPException , Depends ,  Query
+from fastapi import APIRouter , HTTPException , Depends , Query
 from pydantic import BaseModel
 from typing import Optional ,List
 from services.movie import get_movies_from_db , add_movie , soft_delete_movie, permanent_delete_movie ,get_movie_by_id, update_movie
 from schemas.Movie import MovieSchema
 from sqlalchemy.orm import Session
 from database import get_db
+from models.Movies import Movie 
+
 
 router = APIRouter()
 
@@ -12,11 +14,17 @@ router = APIRouter()
 @router.get("/")
 def get_movies_route(db: Session = Depends(get_db), genre: Optional[int] = Query(None)):
     if genre:
-        return get_movies_from_db_by_genre(db, genre)
-    return get_movies_from_db(db)
+        try:
+            movies = get_movies_from_db_by_genre(db, genre)
+            return movies
+        except HTTPException as e:
+            raise e
+    else:
+        return get_movies_from_db(db)
+
 
 def get_movies_from_db_by_genre(db: Session, genre: int):
-    movies = db.query(Movie).filter(Movie.genre_ids.contains([genre]), Movie.deleted == False).all()
+    movies = db.query(Movie).filter(Movie.genre_ids.any(genre), Movie.deleted == False).all()
     if not movies:
         raise HTTPException(status_code=404, detail="No movies found for this genre")
     return movies
