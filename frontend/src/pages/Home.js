@@ -1,173 +1,153 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import axios from 'axios';
 
-const HomePage = () => {
+const Home = () => {
   const [genres, setGenres] = useState([]);
   const [movies, setMovies] = useState([]);
-  const [selectedGenre, setSelectedGenre] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredMovies, setFilteredMovies] = useState([]);
+  const [filteredGenres, setFilteredGenres] = useState([]);
 
-  // טוען את הג'אנרים
+  // טעינת הסרטים
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/genres')
-      .then((response) => response.json())
-      .then((data) => setGenres(data))
-      .catch((error) => {
-        console.error('Error fetching genres:', error);
-        setError('לא ניתן לטעון את הגנרים');
-      });
+    axios.get('http://127.0.0.1:8000/movies')
+      .then((res) => setMovies(res.data))
+      .catch((err) => console.error('Error fetching movies:', err));
   }, []);
 
+  // חיפוש בזמן אמת
   useEffect(() => {
-    const fetchMovies = async () => {
-      if (selectedGenre === null) return; // אם לא נבחר ג'אנר, אל נטען סרטים
-      setLoading(true);
-      setError(null);
-  
-      try {
-        const url = `http://127.0.0.1:8000/movies/?genre=${selectedGenre}`;
-        console.log('Fetching movies from:', url); // לוג של ה-URL
-        const response = await fetch(url);
-        console.log('API Response:', response); // לוג של התשובה
-        if (!response.ok) {
-          throw new Error('לא ניתן לטעון את הסרטים');
-        }
-        const data = await response.json();
-        console.log('Movies Data:', data); // לוג של הנתונים המתקבלים
-        setMovies(data);
-      } catch (error) {
-        console.error('Error fetching movies:', error);
-        setError('לא ניתן לטעון את הסרטים');
-      } finally {
-        setLoading(false);
-      }
-    };
-  
-    fetchMovies();
-  }, [selectedGenre]);
-  
-  
+    const search = searchTerm.toLowerCase();
+    setFilteredMovies(movies.filter((movie) => movie.title.toLowerCase().includes(search)));
+    setFilteredGenres(genres.filter((genre) => genre.name.toLowerCase().includes(search)));
+  }, [searchTerm, movies, genres]);
+
   return (
-    <div style={styles.homePage}>
-      <h1 style={styles.h1}>ברוך הבא לעולם הסרטים</h1>
-      <div style={styles.genreList}>
-        <h3 style={styles.p}>בחר ז'אנר:</h3>
-        {genres.map((genre) => (
-          <button
-            key={genre.id}
-            style={{
-              ...styles.genreButton,
-              ...(selectedGenre === genre.id ? styles.genreButtonActive : {}),
-            }}
-            onClick={() => setSelectedGenre(genre.id)} // כאן אתה בוחר את הג'אנר
-          >
-            {genre.name}
-          </button>
-        ))}
-      </div>
-  
-      {/* מצב טעינה */}
-      {loading && <p style={styles.p}>טוען סרטים...</p>}
-  
-      {/* מצב שגיאה */}
-      {error && <p style={{ ...styles.p, color: 'red' }}>{error}</p>}
-  
-      <div style={styles.movieList}>
-        <h3 style={styles.p}>סרטים:</h3>
-        {movies.length === 0 && !loading && !error ? (
-          <p style={styles.p}>לא נמצאו סרטים</p>
-        ) : (
-          movies.map((movie) => (
-            <div key={movie.id} style={styles.movieItem}>
-              <Link to={`/list/${movie.id}`} style={{ textDecoration: 'none' }}>
-                <h4 style={styles.movieItemH4}>{movie.title}</h4>
-                <p style={styles.movieItemP}>{movie.description}</p>
-              </Link>
+    <div style={styles.container}>
+      <h1 style={styles.title}>🎬 Discover Amazing Movies & Genres</h1>
+
+      {/* שדה חיפוש */}
+      <input
+        type="text"
+        placeholder="Search for movies or genres..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        style={styles.searchInput}
+      />
+
+      {/* הצגת תוצאות חיפוש */}
+      {searchTerm && (
+        <div style={styles.resultsContainer}>
+          <h3 style={styles.subTitle}>Search Results:</h3>
+
+          {/* סרטים תואמים */}
+          {filteredMovies.length > 0 && (
+            <div>
+              <h4 style={styles.sectionTitle}>Movies</h4>
+              <div style={styles.grid}>
+                {filteredMovies.map((movie) => (
+                  <Link key={movie.id} to={`/list/${movie.id}`} style={styles.card}>
+                    <img src={movie.image} alt={movie.title} style={styles.image} />
+                    <p style={styles.cardText}>{movie.title}</p>
+                  </Link>
+                ))}
+              </div>
             </div>
-          ))
-        )}
+          )}
+        </div>
+      )}
+
+      {/* כותרת הסרטים */}
+      <h2 style={styles.subTitle}>🎥 Trending Movies</h2>
+      <div style={styles.grid}>
+        {movies.map((movie) => (
+          <Link key={movie.id} to={`/list/${movie.id}`} style={styles.card}>
+            <img src={movie.image} alt={movie.title} style={styles.image} />
+            <p style={styles.cardText}>{movie.title}</p>
+          </Link>
+        ))}
       </div>
     </div>
   );
 };
 
 const styles = {
-  homePage: {
-    padding: '20px',
+  container: {
+    padding: '40px 20px',
     fontFamily: 'Arial, sans-serif',
-    backgroundColor: '#f0f0f0',
     textAlign: 'center',
-  },
-
-  h1: {
-    color: '#333',
-    marginBottom: '30px',
-  },
-
-  genreList: {
-    display: 'flex',
-    justifyContent: 'center',
-    margin: '20px 0',
-  },
-
-  genreButton: {
-    backgroundColor: '#4CAF50',
+    background: 'linear-gradient(to right, #1f1c2c, #928DAB)',
     color: 'white',
+    minHeight: '100vh',
+  },
+  title: {
+    fontSize: '36px',
+    fontWeight: 'bold',
+    marginBottom: '20px',
+  },
+  searchInput: {
+    width: '60%',
+    padding: '12px',
+    fontSize: '18px',
+    borderRadius: '8px',
     border: 'none',
-    padding: '10px 20px',
-    margin: '0 10px',
-    cursor: 'pointer',
-    fontSize: '16px',
-    borderRadius: '5px',
-    transition: 'background-color 0.3s',
+    outline: 'none',
+    textAlign: 'center',
+    marginBottom: '20px',
   },
-
-  genreButtonActive: {
-    backgroundColor: '#45a049',
-  },
-
-  genreButtonHover: {
-    backgroundColor: '#3e8e41',
-  },
-
-  movieList: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    marginTop: '20px',
-  },
-
-  movieItem: {
-    backgroundColor: 'white',
-    margin: '10px',
-    padding: '15px',
+  resultsContainer: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    padding: '20px',
     borderRadius: '10px',
-    boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
-    width: '200px',
-    textAlign: 'left',
-    transition: 'transform 0.2s',
+    marginTop: '10px',
   },
-
-  movieItemHover: {
+  subTitle: {
+    fontSize: '28px',
+    fontWeight: 'bold',
+    marginTop: '30px',
+    borderBottom: '2px solid white',
+    display: 'inline-block',
+    paddingBottom: '5px',
+  },
+  sectionTitle: {
+    fontSize: '22px',
+    marginBottom: '10px',
+    textAlign: 'left',
+    paddingLeft: '20px',
+  },
+  grid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
+    gap: '15px',
+    justifyContent: 'center',
+    padding: '20px',
+  },
+  card: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: '10px',
+    padding: '10px',
+    textAlign: 'center',
+    textDecoration: 'none',
+    color: 'white',
+    transition: 'transform 0.3s ease',
+    boxShadow: '0px 4px 10px rgba(255, 255, 255, 0.2)',
+  },
+  cardHover: {
     transform: 'scale(1.05)',
   },
-
-  movieItemH4: {
+  image: {
+    width: '100%',
+    height: '200px',
+    objectFit: 'cover',
+    borderRadius: '8px',
+  },
+  cardText: {
+    marginTop: '10px',
     fontSize: '18px',
-    color: '#333',
-  },
-
-  movieItemP: {
-    fontSize: '14px',
-    color: '#555',
-  },
-
-  p: {
-    fontSize: '16px',
-    color: '#333',
+    fontWeight: 'bold',
   },
 };
 
-export default HomePage;
+export default Home;
+

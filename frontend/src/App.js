@@ -6,7 +6,7 @@ import MovieItem from './pages/MovieItem'
 // import EntityPage from './pages/EntityPage';
 import MovieForm from './pages/MovieForm'
 import NavBar from './pages/NavBar';
-import HomePage from './pages/Home';
+import Home from './pages/Home';
 import GenresList from './pages/GenresList';
 import GenreForm from './pages/GenreForm';
 
@@ -16,7 +16,7 @@ function App() {
     <div className="App">
       <NavBar/>
       <Routes>
-          <Route path="/" element={<HomePage />} /> {/* הוספת Route לדף הבית */}
+          <Route path="/" element={<Home />} /> 
           <Route path='list' element={<MoviesList/>}/>
           <Route path="/list/:movieId" element={<MovieItem />} />
           {/* <Route path="/movies/:id" element={<EntityPage />} />  */}
