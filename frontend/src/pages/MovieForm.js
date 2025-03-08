@@ -54,29 +54,6 @@ const MovieForm = () => {
     enabled: isEditMode,
 });
 
-// const mockGenres = [
-//     { id: 1, name: 'Sci-fi' },
-//     { id: 2, name: 'Comedy' },
-//     { id: 3, name: 'Drama' },
-//     { id: 4, name: 'Action' },
-//     { id: 5, name: 'Animation' },
-//     { id: 6, name: 'Adventure' },
-//     { id: 7, name: 'Musical' },
-//     { id: 8, name: 'Family' },
-//     { id: 9, name: 'Fantasy' },
-//     { id: 10, name: 'Horror' },
-//     { id: 11, name: 'Thriller' },
-//     { id: 12, name: 'Mystery' },
-//     { id: 13, name: 'Crime' },
-//     { id: 14, name: 'Romance' },
-//     { id: 15, name: 'Western' },
-//     { id: 16, name: 'History' },
-//     { id: 17, name: 'War' },
-//     { id: 18, name: 'Documentary' },
-//     { id: 19, name: 'Sport' },
-//     { id: 20, name: 'Biography' },
-// ];
-    
     const movieForm = useFormik({
         initialValues: {
             title: "",

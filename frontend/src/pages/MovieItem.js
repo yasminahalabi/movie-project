@@ -36,7 +36,7 @@ const MovieItem = ({ softDeleteMovie, permanentDeleteMovie }) => {
             <p><strong>Description:</strong> {movie.description}</p>
             <p><strong>Release Date:</strong> {movie.release_date}</p>
             <p><strong>Duration:</strong> {movie.duration} minutes</p>
-            <p><strong>Genres:</strong> {movie.genre_ids?.join(', ')}</p>
+            <p><strong>Genres:</strong> {movie.genres?.join(', ')}</p>
             <p><strong>Actors:</strong> {movie.actors?.join(', ')}</p>
             <p><strong>Director:</strong> {movie.director}</p>
             <p><strong>Language:</strong> {movie.language}</p>
@@ -56,84 +56,66 @@ const MovieItem = ({ softDeleteMovie, permanentDeleteMovie }) => {
 const styles = {
   movieItem: {
     padding: '50px',
-    backgroundColor: '#f9f9f9',
+    backgroundColor: '#f3f5f7',
     borderRadius: '20px',
-    boxShadow: '0 20px 50px rgba(0, 0, 0, 0.1)',
+    boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15)',
     color: '#333',
-    maxWidth: '1000px',
+    maxWidth: '1100px',
     margin: '50px auto',
     fontFamily: '"Poppins", sans-serif',
     textAlign: 'center',
     position: 'relative',
+    transition: 'transform 0.3s ease-in-out',
   },
   backButton: {
     display: 'inline-block',
     padding: '12px 30px',
-    backgroundColor: '#003366',
+    backgroundColor: '#007BFF',
     color: '#fff',
     textDecoration: 'none',
-    borderRadius: '25px',
+    borderRadius: '30px',
     marginBottom: '40px',
     fontSize: '1.2rem',
-    boxShadow: '0 6px 12px rgba(0, 0, 0, 0.2)',
+    boxShadow: '0 8px 15px rgba(0, 0, 0, 0.2)',
     transition: 'all 0.3s ease',
-  },
-  backButtonHover: {
-    backgroundColor: '#005fa3',
   },
   contentWrapper: {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'column',
-    gap: '30px',
+    gap: '40px',
   },
-  movieDetails: {
-    width: '75%',
+  movieDetail: {
+    width: '80%',
     padding: '40px',
     backgroundColor: '#fff',
-    borderRadius: '20px',
+    borderRadius: '15px',
     boxShadow: '0 10px 40px rgba(0, 0, 0, 0.1)',
     transition: 'all 0.3s ease-in-out',
   },
   title: {
-    fontSize: '2.8rem',
+    fontSize: '2.5rem',
     fontWeight: '700',
-    color: '#003366',
+    color: '#2a2a2a',
     marginBottom: '30px',
+    letterSpacing: '1px',
   },
   movieImage: {
-    width: '60%',
+    width: '70%',
     height: 'auto',
     objectFit: 'cover',
     borderRadius: '15px',
     marginBottom: '30px',
     border: '4px solid #fff',
+    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
     transition: 'transform 0.3s ease',
   },
-  movieImageHover: {
-    transform: 'scale(1.05)',
-  },
   detailsContainer: {
-    color: '#555',
+    color: '#444',
     fontSize: '1.2rem',
     lineHeight: '1.8',
     marginTop: '30px',
-  },
-  loadingContainer: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '100vh',
-    fontSize: '22px',
-  },
-  spinner: {
-    border: '4px solid rgba(0, 0, 0, 0.1)',
-    borderTop: '4px solid #003366',
-    borderRadius: '50%',
-    width: '50px',
-    height: '50px',
-    animation: 'spin 1s linear infinite',
   },
   errorMessage: {
     color: '#e74c3c',

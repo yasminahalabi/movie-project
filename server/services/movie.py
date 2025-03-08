@@ -97,11 +97,38 @@ def permanent_delete_movie(db: Session, movie_id: int):
     return {"message": "Movie deleted permanently"}
 
 def get_movie_by_id(db: Session, movie_id: int):
+    # חיפוש סרט במאגר לפי ID
     db_movie = db.query(Movie).filter(Movie.id == movie_id, Movie.deleted == False).first()
     if not db_movie:
         raise HTTPException(status_code=404, detail="Movie not found or already deleted")
+
     genre_names = db.query(Genre).filter(Genre.id.in_(db_movie.genre_ids)).all()
-    return db_movie, genre_names 
+    genre_names = [genre.name for genre in genre_names]  # להחזיר רק שמות ולא אובייקטים
+    return {
+        **db_movie.__dict__,  # מכניסים את כל פרטי הסרט
+        "genres": genre_names  # מוסיפים את שמות הז'אנרים
+    }
+
+    # החזרת הסרט והז'אנרים
+    # return {
+    #     "id": db_movie.id,
+    #     "title": db_movie.title,
+    #     "description": db_movie.description,
+    #     "release_date": db_movie.release_date,
+    #     "duration": db_movie.duration,
+    #     "genres": genre_names,  # שמות הז'אנרים
+    #     "actors": db_movie.actors,
+    #     "director": db_movie.director,
+    #     "language": db_movie.language,
+    #     "rating": db_movie.rating,
+    #     "star_rating": db_movie.star_rating,
+    #     "awards": db_movie.awards,
+    #     "age_restriction": db_movie.age_restriction,
+    #     "watchurl": db_movie.watchurl,
+    #     "url_image": db_movie.url_image
+    # }
+
+
 
 def update_movie(db: Session, movie_id: int, updated_movie: MovieSchema):
     db_movie = db.query(Movie).filter(Movie.id == movie_id, Movie.deleted == False).first()
