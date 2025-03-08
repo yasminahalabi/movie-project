@@ -8,38 +8,25 @@ const GenresList = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Load genres
   useEffect(() => {
     fetch('http://127.0.0.1:8000/genres')
       .then((response) => response.json())
-      .then((data) => setGenres(data))
-      .catch((error) => {
-        console.error('Error fetching genres:', error);
-        setError('Unable to load genres');
-      });
+      .then((data) => setGenres(data.sort((a, b) => a.id - b.id)))
+      .catch(() => setError('Unable to load genres'));
   }, []);
 
-  // Load movies for selected genre
   useEffect(() => {
     const fetchMovies = async () => {
-      if (selectedGenre === null) return; // Don't load movies if no genre is selected
+      if (selectedGenre === null) return;
       setLoading(true);
       setError(null);
-      setMovies([]); // Clear previous movie list when genre is changed
+      setMovies([]);
 
       try {
-        const url = `http://127.0.0.1:8000/movies/?genre=${selectedGenre}`;
-        console.log('Fetching movies from:', url); // URL log
-        const response = await fetch(url);
-        console.log('API Response:', response); // API response log
-        if (!response.ok) {
-          throw new Error('Unable to load movies');
-        }
-        const data = await response.json();
-        console.log('Movies Data:', data); // Data log
-        setMovies(data);
-      } catch (error) {
-        console.error('Error fetching movies:', error);
+        const response = await fetch(`http://127.0.0.1:8000/movies/?genre=${selectedGenre}`);
+        if (!response.ok) throw new Error();
+        setMovies(await response.json());
+      } catch {
         setError('Unable to load movies');
       } finally {
         setLoading(false);
@@ -49,11 +36,17 @@ const GenresList = () => {
     fetchMovies();
   }, [selectedGenre]);
 
+  useEffect(() => {
+    if (selectedGenre) {
+      document.getElementById('movieList')?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [selectedGenre]);
+
   return (
     <div style={styles.homePage}>
-      <h1 style={styles.h1}>Welcome to the World of Movies</h1>
+      <h1 style={styles.h1}>🎬 Welcome to the Movie World</h1>
       <div style={styles.genreList}>
-        <h3 style={styles.p}>Choose a Genre:</h3>
+        <h3 style={styles.genreTitle}>🎭 Choose a Genre:</h3>
         {genres.map((genre) => (
           <button
             key={genre.id}
@@ -61,31 +54,30 @@ const GenresList = () => {
               ...styles.genreButton,
               ...(selectedGenre === genre.id ? styles.genreButtonActive : {}),
             }}
-            onClick={() => setSelectedGenre(genre.id)} // Select genre
+            onClick={() => setSelectedGenre(genre.id)}
           >
-            {genre.name}
+            <div style={styles.genreButtonContent}>
+              {genre.image && <img src={genre.image} alt={genre.name} style={styles.genreImage} />}
+              <span style={styles.genreText}>{genre.name}</span>
+            </div>
           </button>
         ))}
       </div>
 
-      {/* Loading state */}
-      {loading && <p style={styles.p}>Loading movies...</p>}
+      {loading && <p style={styles.loadingMessage}>⏳ Loading movies...</p>}
+      {error && <p style={styles.errorMessage}>{error}</p>}
 
-      {/* Error state */}
-      {error && <p style={{ ...styles.p, color: 'red' }}>{error}</p>}
-
-      {/* Movies load after genre selection */}
       {selectedGenre && (
-        <div style={styles.movieList}>
-          <h3 style={styles.p}>Movies:</h3>
+        <div id="movieList" style={styles.movieList}>
+          <h3 style={styles.genreTitle}>🎥 Movies:</h3>
           {movies.length === 0 && !loading && !error ? (
-            <p style={styles.p}>No movies found for this genre</p>
+            <p style={styles.noMovies}>No movies found for this genre</p>
           ) : (
             movies.map((movie) => (
               <div key={movie.id} style={styles.movieItem}>
                 <Link to={`/list/${movie.id}`} style={{ textDecoration: 'none' }}>
-                  <h4 style={styles.movieItemH4}>{movie.title}</h4>
-                  <p style={styles.movieItemP}>{movie.description}</p>
+                  <h4 style={styles.movieTitle}>{movie.title}</h4>
+                  <p style={styles.movieDescription}>{movie.description}</p>
                 </Link>
               </div>
             ))
@@ -100,76 +92,122 @@ const styles = {
   homePage: {
     padding: '20px',
     fontFamily: 'Arial, sans-serif',
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#1C1C1C',
     textAlign: 'center',
+    minHeight: '100vh',
   },
 
   h1: {
-    color: '#333',
-    marginBottom: '30px',
+    color: '#F4A261',
+    fontSize: '36px',
+    fontWeight: 'bold',
   },
 
   genreList: {
     display: 'flex',
     justifyContent: 'center',
+    flexWrap: 'wrap',
+    maxWidth: '100%',
     margin: '20px 0',
-    flexWrap: 'wrap', // To ensure it fits the screen
-    maxWidth: '100%', // Ensures the genre list stays within page width
+  },
+
+  genreTitle: {
+    color: '#E9C46A',
+    fontSize: '22px',
+    marginBottom: '10px',
   },
 
   genreButton: {
-    backgroundColor: '#4CAF50',
+    backgroundColor: '#264653',
     color: 'white',
     border: 'none',
-    padding: '10px 20px',
-    margin: '5px',
+    padding: '20px',
+    margin: '10px',
     cursor: 'pointer',
-    fontSize: '16px',
-    borderRadius: '5px',
-    transition: 'background-color 0.3s',
-    width: '150px', // Set a fixed width for buttons
+    fontSize: '18px',
+    borderRadius: '15px',
+    width: '200px',
+    height: '220px',
     textAlign: 'center',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    transition: 'transform 0.3s, box-shadow 0.3s',
   },
 
   genreButtonActive: {
-    backgroundColor: '#45a049',
+    backgroundColor: '#2A9D8F',
+    transform: 'scale(1.05)',
+    boxShadow: '0px 0px 15px rgba(255, 255, 255, 0.8)',
+  },
+
+  genreButtonContent: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+
+  genreImage: {
+    width: '150px',
+    height: '150px',
+    objectFit: 'cover',
+    borderRadius: '15px',
+    marginBottom: '10px',
+  },
+
+  genreText: {
+    fontSize: '18px',
+    fontWeight: 'bold',
   },
 
   movieList: {
     display: 'flex',
     flexWrap: 'wrap',
     justifyContent: 'center',
-    marginTop: '20px',
+    marginTop: '30px',
   },
 
   movieItem: {
-    backgroundColor: 'white',
-    margin: '10px',
-    padding: '15px',
-    borderRadius: '10px',
-    boxShadow: '0px 4px 6px rgba(0, 0, 0, 0.1)',
-    width: '200px',
+    backgroundColor: '#2A9D8F',
+    margin: '15px',
+    padding: '20px',
+    borderRadius: '15px',
+    boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.3)',
+    width: '280px',
     textAlign: 'left',
-    transition: 'transform 0.2s',
+    transition: 'transform 0.3s, box-shadow 0.3s',
   },
 
   movieItemHover: {
     transform: 'scale(1.05)',
+    boxShadow: '0px 8px 16px rgba(0, 0, 0, 0.5)',
   },
 
-  movieItemH4: {
-    fontSize: '18px',
-    color: '#333',
+  movieTitle: {
+    fontSize: '20px',
+    color: '#FFF',
   },
 
-  movieItemP: {
+  movieDescription: {
     fontSize: '14px',
-    color: '#555',
+    color: '#E9C46A',
   },
 
-  p: {
-    fontSize: '16px',
-    color: '#333',
+  loadingMessage: {
+    fontSize: '18px',
+    color: '#E9C46A',
+    fontStyle: 'italic',
+  },
+
+  errorMessage: {
+    fontSize: '18px',
+    color: 'red',
+  },
+
+  noMovies: {
+    fontSize: '18px',
+    color: '#F4A261',
   },
 };
 

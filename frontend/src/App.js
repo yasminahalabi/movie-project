@@ -8,6 +8,7 @@ import MovieForm from './pages/MovieForm'
 import NavBar from './pages/NavBar';
 import HomePage from './pages/Home';
 import GenresList from './pages/GenresList';
+import GenreForm from './pages/GenreForm';
 
 function App() {
   return (
@@ -22,7 +23,8 @@ function App() {
           <Route path='/add-movie' element={<MovieForm />} />
           <Route path="/edit/:id" element={<MovieForm />} />
           <Route path="/genres" element={<GenresList />} />
-
+          <Route path="/genres/add" element={<GenreForm />} />
+          <Route path="/genres/edit/:id" element={<GenreForm />} /> 
       </Routes> 
     </div>
     </BrowserRouter>
