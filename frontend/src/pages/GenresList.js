@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 const GenresList = () => {
   const [genres, setGenres] = useState([]);
   const [movies, setMovies] = useState([]);
-  const [selectedGenre, setSelectedGenre] = useState(null);
+  const [selectedGenres, setSelectedGenres] = useState([]); // שימוש במערך עבור מספר ז'אנרים
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -17,13 +17,14 @@ const GenresList = () => {
 
   useEffect(() => {
     const fetchMovies = async () => {
-      if (selectedGenre === null) return;
+      if (selectedGenres.length === 0) return; // אם לא נבחרו ז'אנרים, אין צורך לשלוף סרטים
       setLoading(true);
       setError(null);
       setMovies([]);
 
       try {
-        const response = await fetch(`http://127.0.0.1:8000/movies/?genre=${selectedGenre}`);
+        const genreQuery = selectedGenres.join('&genre='); // בונים את השאילתא
+        const response = await fetch(`http://127.0.0.1:8000/movies/?genre=${genreQuery}`);
         if (!response.ok) throw new Error();
         setMovies(await response.json());
       } catch {
@@ -34,27 +35,33 @@ const GenresList = () => {
     };
 
     fetchMovies();
-  }, [selectedGenre]);
+  }, [selectedGenres]);
+
+  const handleGenreClick = (genreId) => {
+    setSelectedGenres((prevGenres) =>
+      prevGenres.includes(genreId) ? prevGenres.filter((id) => id !== genreId) : [...prevGenres, genreId]
+    );
+  };
 
   useEffect(() => {
-    if (selectedGenre) {
+    if (selectedGenres.length > 0) {
       document.getElementById('movieList')?.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [selectedGenre]);
+  }, [selectedGenres]);
 
   return (
     <div style={styles.homePage}>
       <h1 style={styles.h1}>🎬 Welcome to the Movie World</h1>
       <div style={styles.genreList}>
-        <h3 style={styles.genreTitle}>🎭 Choose a Genre:</h3>
+        <h3 style={styles.genreTitle}>🎭 Choose Genres:</h3>
         {genres.map((genre) => (
           <button
             key={genre.id}
             style={{
               ...styles.genreButton,
-              ...(selectedGenre === genre.id ? styles.genreButtonActive : {}),
+              ...(selectedGenres.includes(genre.id) ? styles.genreButtonActive : {}),
             }}
-            onClick={() => setSelectedGenre(genre.id)}
+            onClick={() => handleGenreClick(genre.id)} // הוספת אפשרות לבחור ז'אנרים רבים
           >
             <div style={styles.genreButtonContent}>
               {genre.image && <img src={genre.image} alt={genre.name} style={styles.genreImage} />}
@@ -67,11 +74,11 @@ const GenresList = () => {
       {loading && <p style={styles.loadingMessage}>⏳ Loading movies...</p>}
       {error && <p style={styles.errorMessage}>{error}</p>}
 
-      {selectedGenre && (
+      {selectedGenres.length > 0 && (
         <div id="movieList" style={styles.movieList}>
           <h3 style={styles.genreTitle}>🎥 Movies:</h3>
           {movies.length === 0 && !loading && !error ? (
-            <p style={styles.noMovies}>No movies found for this genre</p>
+            <p style={styles.noMovies}>No movies found for the selected genres</p>
           ) : (
             movies.map((movie) => (
               <div key={movie.id} style={styles.movieItem}>
@@ -177,11 +184,6 @@ const styles = {
     width: '280px',
     textAlign: 'left',
     transition: 'transform 0.3s, box-shadow 0.3s',
-  },
-
-  movieItemHover: {
-    transform: 'scale(1.05)',
-    boxShadow: '0px 8px 16px rgba(0, 0, 0, 0.5)',
   },
 
   movieTitle: {
