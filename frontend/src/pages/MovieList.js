@@ -363,7 +363,7 @@ const MoviesList = () => {
       queryClient.invalidateQueries(['movies']);
     },
   });
-  
+   
   
   const { data: list, error, isLoading } = useQuery({
     queryKey: ['movies'],
@@ -489,5 +489,5 @@ const MoviesList = () => {
   );
 };
 
-export default MoviesList;
+export default MoviesList
 
