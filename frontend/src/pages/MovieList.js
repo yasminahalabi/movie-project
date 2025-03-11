@@ -327,7 +327,7 @@ const fetchMovies = async () => {
 };
 
 const toggleFavorite = async (movieId, isFavorite) => {
-  await axios.put(`http://localhost:8000/movies/${movieId}/favorite`);
+  await axios.put(`http://localhost:8000/movies/${movieId}/favorite?is_favorite=${!isFavorite}`);
 };
 
 const MoviesList = () => {

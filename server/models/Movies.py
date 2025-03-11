@@ -20,3 +20,4 @@ class Movie (Base):
     watchurl = Column(String, nullable=True)
     deleted = Column(Boolean, default=False)  # מחיקה רכה
     deleted_on = Column(DateTime, nullable=True)
+    is_favorite = Column(Boolean, default=False)

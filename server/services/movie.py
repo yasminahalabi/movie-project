@@ -143,3 +143,15 @@ def update_movie(db: Session, movie_id: int, updated_movie: MovieSchema):
     db.refresh(db_movie)
     
     return db_movie    
+
+def update_favorite_status(db: Session, movie_id: int, is_favorite: bool):
+    movie = db.query(Movie).filter(Movie.id == movie_id).first()
+    if not movie:
+        return None
+    movie.is_favorite = is_favorite
+    db.commit()
+    db.refresh(movie)
+    return movie
+
+def get_favorite_movies(db: Session):
+    return db.query(Movie).filter(Movie.is_favorite == True, Movie.deleted == False).all()

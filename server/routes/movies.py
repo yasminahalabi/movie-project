@@ -1,7 +1,7 @@
 from fastapi import APIRouter , HTTPException , Depends , Query
 from pydantic import BaseModel
 from typing import Optional ,List
-from services.movie import get_movies_from_db , add_movie , soft_delete_movie, permanent_delete_movie ,get_movie_by_id, update_movie
+from services.movie import get_movies_from_db , add_movie , soft_delete_movie, permanent_delete_movie ,get_movie_by_id, update_movie, update_favorite_status, get_favorite_movies
 from schemas.Movie import MovieSchema
 from sqlalchemy.orm import Session
 from database import get_db
@@ -54,6 +54,14 @@ def get_movies_from_db_by_genre(db: Session, genre: int):
 def add_movie_route(new_movie: MovieSchema, db:Session = Depends (get_db)):
     return add_movie(db, new_movie)
 
+@router.get("/all-favorites") 
+def fetch_favorite_movies(db: Session = Depends(get_db)):
+    return get_favorite_movies(db)    
+
+@router.get("/{movie_id}")
+def get_movie_route(movie_id: int, db: Session = Depends(get_db)):
+    return get_movie_by_id(db, movie_id)
+
 
 # @router.put("/{movie_id}")
 # def update_movie_route(movie_id: int, updated_movie: MovieSchema, db: Session = Depends(get_db)):
@@ -69,13 +77,15 @@ def soft_delete_route(movie_id: int, db: Session = Depends(get_db)):
 def permanent_delete_route(movie_id: int, db: Session = Depends(get_db)):
     return permanent_delete_movie(db, movie_id)
 
-@router.get("/{movie_id}")
-def get_movie_route(movie_id: int, db: Session = Depends(get_db)):
-    return get_movie_by_id(db, movie_id)
+@router.put("/{movie_id}/favorite")
+def set_favorite(movie_id: int, is_favorite: bool, db: Session = Depends(get_db)):
+    movie = update_favorite_status(db, movie_id, is_favorite)
+    if not movie:
+        raise HTTPException(status_code=404, detail="Movie not found")
+    return {"message": "Favorite status updated", "movie": movie}
 
 @router.put("/{movie_id}")
 async def update_movie_route(movie_id: int, updated_movie: MovieSchema, db: Session = Depends(get_db)):
     movie = update_movie(db, movie_id, updated_movie)
     return {"message": "Movie updated successfully", "movie": movie}
 
-   
