@@ -1,7 +1,7 @@
 from fastapi import APIRouter , HTTPException , Depends , Query
 from pydantic import BaseModel
 from typing import Optional ,List
-from services.movie import get_movies_from_db , add_movie , soft_delete_movie, permanent_delete_movie ,get_movie_by_id, update_movie, update_favorite_status, get_favorite_movies
+from services.movie import get_movies_from_db , add_movie , soft_delete_movie, permanent_delete_movie ,get_movie_by_id, update_movie, update_favorite_status, get_favorite_movies , restore_movie , get_deleted_movies
 from schemas.Movie import MovieSchema
 from sqlalchemy.orm import Session
 from database import get_db
@@ -56,7 +56,12 @@ def add_movie_route(new_movie: MovieSchema, db:Session = Depends (get_db)):
 
 @router.get("/all-favorites") 
 def fetch_favorite_movies(db: Session = Depends(get_db)):
-    return get_favorite_movies(db)    
+    return get_favorite_movies(db)   
+
+# Route להצגת סרטים שנמצאים בארכיון
+@router.get("/deleted")
+def get_deleted_movies_route(db: Session = Depends(get_db)):
+    return get_deleted_movies(db)
 
 @router.get("/{movie_id}")
 def get_movie_route(movie_id: int, db: Session = Depends(get_db)):
@@ -89,3 +94,7 @@ async def update_movie_route(movie_id: int, updated_movie: MovieSchema, db: Sess
     movie = update_movie(db, movie_id, updated_movie)
     return {"message": "Movie updated successfully", "movie": movie}
 
+# Route לשחזור סרט (ממחיקה רכה)
+@router.put("/{movie_id}/restore")
+def restore_movie_route(movie_id: int, db: Session = Depends(get_db)):
+    return restore_movie(db, movie_id)

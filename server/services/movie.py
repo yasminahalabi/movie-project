@@ -12,29 +12,6 @@ def get_movies_from_db(db:Session):
 def get_movies_from_db_by_genre(db: Session, genre: int):
     return db.query(Movie).filter(Movie.genre_ids.contains([genre]), Movie.deleted == False).all()
 
-# def add_movie(db: Session, movie: MovieSchema):
-#     db_movie = Movie(
-#         title=movie.title,
-#         description=movie.description,
-#         release_date=movie.release_date,
-#         url_image=movie.url_image,
-#         duration=movie.duration,
-#         genre_ids=movie.genre_ids,
-#         actors=movie.actors,
-#         director=movie.director,
-#         language=movie.language,
-#         rating=movie.rating,
-#         star_rating=movie.star_rating,
-#         awards=movie.awards,
-#         age_restriction=movie.age_restriction,
-#         watchurl=movie.watchurl,
-#     )
-#     print(db.execute("SELECT current_database();").fetchone())
-#     db.add(db_movie)
-#     db.commit()
-#     db.refresh(db_movie)
-#     return db_movie
-
 def add_movie(db: Session, movie: MovieSchema):
     try:
         db_movie = Movie(
@@ -109,27 +86,6 @@ def get_movie_by_id(db: Session, movie_id: int):
         "genres": genre_names  # מוסיפים את שמות הז'אנרים
     }
 
-    # החזרת הסרט והז'אנרים
-    # return {
-    #     "id": db_movie.id,
-    #     "title": db_movie.title,
-    #     "description": db_movie.description,
-    #     "release_date": db_movie.release_date,
-    #     "duration": db_movie.duration,
-    #     "genres": genre_names,  # שמות הז'אנרים
-    #     "actors": db_movie.actors,
-    #     "director": db_movie.director,
-    #     "language": db_movie.language,
-    #     "rating": db_movie.rating,
-    #     "star_rating": db_movie.star_rating,
-    #     "awards": db_movie.awards,
-    #     "age_restriction": db_movie.age_restriction,
-    #     "watchurl": db_movie.watchurl,
-    #     "url_image": db_movie.url_image
-    # }
-
-
-
 def update_movie(db: Session, movie_id: int, updated_movie: MovieSchema):
     db_movie = db.query(Movie).filter(Movie.id == movie_id, Movie.deleted == False).first()
     if not db_movie:
@@ -155,3 +111,17 @@ def update_favorite_status(db: Session, movie_id: int, is_favorite: bool):
 
 def get_favorite_movies(db: Session):
     return db.query(Movie).filter(Movie.is_favorite == True, Movie.deleted == False).all()
+
+# קבלת סרטים שנמצאים בארכיון
+def get_deleted_movies(db: Session):
+    return db.query(Movie).filter(Movie.deleted == True).all()
+
+def restore_movie(db: Session, movie_id: int):
+    db_movie = db.query(Movie).filter(Movie.id == movie_id, Movie.deleted == True).first()
+    if not db_movie:
+        raise HTTPException(status_code=404, detail="Movie not found or not deleted")
+
+    db_movie.deleted = False
+    db_movie.deleted_on = None
+    db.commit()
+    return {"message": "Movie restored successfully", "movie": db_movie}

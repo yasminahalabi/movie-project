@@ -23,6 +23,9 @@ const NavBar = () => {
         <li style={styles.navItem}>
           <Link to="/favorite" style={styles.navLink}>Favorites</Link> 
         </li>
+        <li style={styles.navItem}>
+          <Link to="/Archived" style={styles.navLink}>Archived</Link> 
+        </li>
       </ul>
     </nav>
   );

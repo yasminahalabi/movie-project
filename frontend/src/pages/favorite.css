@@ -144,3 +144,56 @@
     font-size: 18px;
     color: #555;
   }
+
+.restoreButton {
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 8px;
+    transition: background-color 0.3s;
+    width: 100%;
+  }
+  
+  .restoreButton:hover {
+    background-color: #388e3c;
+  }
+  
+  .restoreButton:disabled {
+    background-color: #a5d6a7;
+    cursor: not-allowed;
+  }
+  
+  .deletedOverlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(244, 67, 54, 0.8);
+    color: white;
+    padding: 8px;
+    text-align: center;
+    font-size: 14px;
+  }
+  
+  /* סגנון לרשימת הסרטים הראשית - הוספת כפתור ניווט לדף הסרטים שנמחקו */
+  .archivedMoviesButton {
+    background-color: #ff9800;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-left: 10px;
+  }
+  
+  .archivedMoviesButton:hover {
+    background-color: #f57c00;
+  }
