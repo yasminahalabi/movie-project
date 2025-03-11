@@ -9,10 +9,10 @@ const NavBar = () => {
           <Link to="/" style={styles.navLink}>Home</Link>
         </li>
         <li style={styles.navItem}>
-          <Link to="/add-movie" style={styles.navLink}>Add Movie</Link>
+          <Link to="/list" style={styles.navLink}>Movies</Link>
         </li>
         <li style={styles.navItem}>
-          <Link to="/list" style={styles.navLink}>Movies</Link>
+          <Link to="/add-movie" style={styles.navLink}>Add Movie</Link>
         </li>
         <li style={styles.navItem}>
           <Link to="/genres" style={styles.navLink}>Genres</Link>
@@ -30,8 +30,13 @@ const NavBar = () => {
 
 const styles = {
   navbar: {
-    backgroundColor: '#333',
-    padding: '10px 20px',
+    backgroundColor: '#1a1a2e',
+    padding: '15px 0',
+    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.2)',
+    position: 'sticky',
+    top: 0,
+    zIndex: 1000,
+    width: '100%'
   },
   navList: {
     display: 'flex',
@@ -41,13 +46,19 @@ const styles = {
     padding: 0,
   },
   navItem: {
-    margin: '0 20px',
+    margin: '0 15px',
   },
   navLink: {
     color: '#fff',
     textDecoration: 'none',
-    fontSize: '18px',
-  },
+    fontSize: '17px',
+    padding: '10px 15px',
+    borderRadius: '5px',
+    fontWeight: '500',
+    letterSpacing: '0.5px',
+    transition: 'background-color 0.3s, color 0.3s',
+    display: 'block',
+  }
 };
 
 export default NavBar;
