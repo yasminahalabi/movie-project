@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
 import './favorite.css';
 
 const fetchFavorites = async () => {
@@ -13,16 +14,16 @@ const fetchFavorites = async () => {
   }
 };
 
-// פונקציה להוספת/הסרת סרטים מהאהובים
 const toggleFavorite = async (movie) => {
   const newStatus = !movie.is_favorite;
-  console.log(`Toggling favorite for ${movie.title}, new status: ${newStatus}`); // בדיקה
+  console.log(`Toggling favorite for ${movie.title}, new status: ${newStatus}`);
   await axios.put(`http://localhost:8000/movies/${movie.id}/favorite?is_favorite=${newStatus}`);
   return { ...movie, is_favorite: newStatus };
 };
 
 const FavoriteMovies = () => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const { data: movies, isLoading, error } = useQuery({
     queryKey: ["favoriteMovies"],
@@ -40,29 +41,56 @@ const FavoriteMovies = () => {
     },
   });
 
-  if (isLoading) return <p>טוען...</p>;
-  if (error) return <p>שגיאה: {error.message}</p>;
-  if (!movies || movies.length === 0) return <p>אין סרטים אהובים</p>;
+  const handleMovieClick = (movieId) => {
+    navigate(`/list/${movieId}`);
+  };
+
+  if (isLoading) return <p className="loadingState">Loading...</p>;
+  if (error) return <p className="errorState">Error: {error.message}</p>;
+  if (!movies || movies.length === 0) return <p className="emptyState">No favorite movies</p>;
+
+  // Determine CSS class based on number of movies
+  const gridClassName = movies.length <= 1 
+    ? "movieGrid singleMovie" 
+    : movies.length <= 3 
+      ? "movieGrid fewMovies" 
+      : "movieGrid";
 
   return (
     <div className="pageContainer">
-      <h2 className="header">❤️ הסרטים שאהבתי</h2>
-      <Link to="/" className="backButton">🔙 חזרה</Link>
-      <div className="movieGrid">
+      <div className="headerSection">
+        <h2 className="header">Favorite Movies❤️</h2>
+        <Link to="/" className="backButton">🔙 BACK </Link>
+      </div>
+      
+      <div className={gridClassName}>
         {movies.map((movie) => (
-          <div key={movie.id} className="movieItem">
-            <img
-              src={movie.url_image || "https://via.placeholder.com/300x450"}
-              alt={movie.title}
-              className="movieImage"
-            />
-            <h3>{movie.title}</h3>
-            <button
-              className={`favoriteButton ${movie.is_favorite ? "active" : ""}`}
-              onClick={() => mutation.mutate(movie)}
+          <div key={movie.id} className="movieCard">
+            <div 
+              className="movieImageContainer" 
+              onClick={() => handleMovieClick(movie.id)}
             >
-              {movie.is_favorite ? "💔 הסר מהאהובים" : "❤️ הוסף לאהובים"}
-            </button>
+              <img
+                src={movie.url_image || "https://via.placeholder.com/300x450"}
+                alt={movie.title}
+                className="movieImage"
+              />
+              <div className="viewDetailsOverlay">
+                <span>View details</span>
+              </div>
+            </div>
+            <div className="movieInfo">
+              <h3 className="movieTitle">{movie.title}</h3>
+              <button
+                className={`favoriteButton ${movie.is_favorite ? "active" : ""}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  mutation.mutate(movie);
+                }}
+              >
+                {movie.is_favorite ? " Remove from favorites 💔" : " Add to favorites ❤️"}
+              </button>
+            </div>
           </div>
         ))}
       </div>

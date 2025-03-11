@@ -23,63 +23,19 @@ const sendNewMovie = async (movieData, isEditMode, id) => {
 };
 
 const validationSchema = Yup.object({
-    title: Yup.string()
-        .required("This field is required")
-        .min(2, "The title must be at least 2 characters long")
-        .max(100, "The title cannot exceed 100 characters"),
-
-    release_date: Yup.string()
-        .required("This field is required")
-        .matches(/^\d{4}-\d{2}-\d{2}$/, "The date must be in YYYY-MM-DD format"),
-
-    genre_ids: Yup.array()
-        .min(1, "At least one genre must be selected")
-        .of(Yup.number().integer().positive("Genre must be a positive number")),
-
-    duration: Yup.number()
-        .required("This field is required")
-        .positive("Duration must be a positive number")
-        .min(30, "The duration must be at least 30 minutes")
-        .max(300, "The duration cannot exceed 300 minutes"),
-
-    url_image: Yup.string()
-        .required("This field is required")
-        .url("Please enter a valid URL")
-        .matches(/\.(jpeg|jpg|png|gif)$/i, "The file must be an image (jpg, png, gif)"),
-
-    description: Yup.string()
-        .required("This field is required")
-        .min(10, "The description must be at least 10 characters long"),
-
-    actors: Yup.string()
-        .required("This field is required")
-        .matches(/^[a-zA-Z\s,]+$/, "Actor names can only contain letters and commas"),
-
-    director: Yup.string()
-        .required("This field is required")
-        .matches(/^[a-zA-Z\s]+$/, "The director's name can only contain letters"),
-
-    language: Yup.string()
-        .required("This field is required")
-        .matches(/^[a-zA-Z]+$/, "The language can only contain letters"),
-
-    rating: Yup.number()
-        .required("This field is required")
-        .min(0, "The rating must be at least 0")
-        .max(10, "The rating cannot exceed 10"),
-
-    awards: Yup.string()
-        .nullable()
-        .matches(/^[a-zA-Z\s,]*$/, "Award names can only contain letters and commas"),
-
-    age_restriction: Yup.number()
-        .required("This field is required")
-        .min(0, "Age restriction must be at least 0")
-        .max(18, "Age restriction cannot exceed 18"),
-
-    watchurl: Yup.string()
-        .required("This field is required")
-        .url("Please enter a valid URL")
+    title: Yup.string().required("Required field"),
+    release_date: Yup.string().required("Required field"),
+    genre_ids: Yup.array().min(1,"You must choose at least one genre"),
+    duration: Yup.number().positive().required("Required field"),
+    url_image: Yup.string().url("Please enter a valid URL").required("Required field"),
+    description: Yup.string().required("Required field"),
+    actors: Yup.string().required("Required field"),
+    director: Yup.string().required("Required field"),
+    language: Yup.string().required("Required field"),
+    rating: Yup.number().min(0).max(10).required("Required field"),
+    awards: Yup.string(),
+    age_restriction: Yup.number().min(0).required("Required field"),
+    watchurl: Yup.string().url("Please enter a valid URL").required("Required field"),
 });
 
 
@@ -154,7 +110,7 @@ const MovieForm = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["movies"] });
             movieForm.resetForm();
-            navigate("/movies");
+            // navigate("/movies");
         },
     });
     
@@ -381,14 +337,14 @@ const MovieForm = () => {
                     )}
                 </div>
 
-
                 <button 
                     disabled={!movieForm.isValid || mutation.isLoading} 
                     type="submit" 
                     style={styles.submitButton}
                 >
-                    {mutation.isLoading ? 'Adding...' : 'Submit'}
+                    {mutation.isLoading ? 'Adding...' : isEditMode ? 'Edit Movie' : 'Add Movie'}
                 </button>
+
 
                 {mutation.isSuccess && (
                     <div style={styles.messageSuccess}>
@@ -401,13 +357,12 @@ const MovieForm = () => {
                         Failed to add the movie. Please try again.
                     </div>
                 )}
-                <button type="submit">
-                   {isEditMode ? "עדכון סרט" : "הוספת סרט"}
-                </button>
+
             </form>
         </div>
     );
 };
+
 
 export default MovieForm;
 

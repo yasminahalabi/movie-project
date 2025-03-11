@@ -198,7 +198,7 @@ const MovieItem = ({ softDeleteMovie, permanentDeleteMovie }) => {
   // פורמט תאריך בצורה נוחה לקריאה
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString('he-IL', options);
+    return new Date(dateString).toLocaleDateString('en-US', options);
   };
 
   return (
@@ -210,7 +210,7 @@ const MovieItem = ({ softDeleteMovie, permanentDeleteMovie }) => {
       }}>
         <div style={styles.backButtonContainer}>
           <Link to="/list" style={styles.backButton}>
-            <span style={styles.backArrow}>←</span> חזרה לרשימת הסרטים
+            <span style={styles.backArrow}>←</span> Back to the movie list
           </Link>
         </div>
         
@@ -239,7 +239,7 @@ const MovieItem = ({ softDeleteMovie, permanentDeleteMovie }) => {
               </h1>
               
               <div style={styles.quickInfo}>
-                <span style={styles.pill}>{movie.duration} דקות</span>
+                <span style={styles.pill}>{movie.duration} minutes</span>
                 <span style={styles.pill}>{movie.language}</span>
                 {movie.age_restriction && <span style={styles.ageRestriction}>{movie.age_restriction}+</span>}
               </div>
@@ -256,7 +256,7 @@ const MovieItem = ({ softDeleteMovie, permanentDeleteMovie }) => {
               
               {movie.watchurl && (
                 <a href={movie.watchurl} target="_blank" rel="noopener noreferrer" style={styles.watchButton}>
-                  <span style={styles.watchIcon}>▶</span> צפה עכשיו
+                  <span style={styles.watchIcon}>▶</span> Watch Now
                 </a>
               )}
             </div>
@@ -265,32 +265,32 @@ const MovieItem = ({ softDeleteMovie, permanentDeleteMovie }) => {
           <div style={styles.movieDetail}>
             <div style={styles.detailsContainer}>
               <div style={styles.section}>
-                <h3 style={styles.sectionTitle}>תקציר</h3>
+                <h3 style={styles.sectionTitle}>Description :</h3>
                 <p style={styles.description}>{movie.description}</p>
               </div>
               
               <div style={styles.infoColumns}>
                 <div style={styles.infoColumn}>
                   <div style={styles.section}>
-                    <h3 style={styles.sectionTitle}>פרטי הסרט</h3>
+                    <h3 style={styles.sectionTitle}>Movie details</h3>
                     <div style={styles.infoRow}>
-                      <span style={styles.infoLabel}>במאי:</span>
+                      <span style={styles.infoLabel}>Director :</span>
                       <span style={styles.infoValue}>{movie.director}</span>
                     </div>
                     <div style={styles.infoRow}>
-                      <span style={styles.infoLabel}>תאריך יציאה:</span>
+                      <span style={styles.infoLabel}> Release Date :</span>
                       <span style={styles.infoValue}>{formatDate(movie.release_date)}</span>
                     </div>
                     <div style={styles.infoRow}>
-                      <span style={styles.infoLabel}>זמן הקרנה:</span>
-                      <span style={styles.infoValue}>{movie.duration} דקות</span>
+                      <span style={styles.infoLabel}>Duration :</span>
+                      <span style={styles.infoValue}>{movie.duration} minutes</span>
                     </div>
                     <div style={styles.infoRow}>
-                      <span style={styles.infoLabel}>שפה:</span>
+                      <span style={styles.infoLabel}>Language:</span>
                       <span style={styles.infoValue}>{movie.language}</span>
                     </div>
                     <div style={styles.infoRow}>
-                      <span style={styles.infoLabel}>מגבלת גיל:</span>
+                      <span style={styles.infoLabel}> Age Restriction:</span>
                       <span style={styles.infoValue}>{movie.age_restriction}+</span>
                     </div>
                   </div>
@@ -298,7 +298,7 @@ const MovieItem = ({ softDeleteMovie, permanentDeleteMovie }) => {
                 
                 <div style={styles.infoColumn}>
                   <div style={styles.section}>
-                    <h3 style={styles.sectionTitle}>ז'אנרים</h3>
+                    <h3 style={styles.sectionTitle}>Genres : </h3>
                     <div style={styles.tagsContainer}>
                       {movie.genres?.map((genre, index) => (
                         <span key={index} style={styles.genreTag}>{genre}</span>
@@ -307,7 +307,7 @@ const MovieItem = ({ softDeleteMovie, permanentDeleteMovie }) => {
                   </div>
                   
                   <div style={styles.section}>
-                    <h3 style={styles.sectionTitle}>שחקנים</h3>
+                    <h3 style={styles.sectionTitle}>Actors :</h3>
                     <div style={styles.actorsContainer}>
                       {movie.actors?.map((actor, index) => (
                         <span key={index} style={styles.actorTag}>{actor}</span>
@@ -317,7 +317,7 @@ const MovieItem = ({ softDeleteMovie, permanentDeleteMovie }) => {
                   
                   {movie.awards && (
                     <div style={styles.section}>
-                      <h3 style={styles.sectionTitle}>פרסים</h3>
+                      <h3 style={styles.sectionTitle}>Awards :</h3>
                       <div style={styles.awardsContainer}>
                         <div style={styles.awardBadge}>
                           <span style={styles.awardIcon}>🏆</span>
@@ -342,8 +342,8 @@ const styles = {
     minHeight: '100vh',
     padding: '40px 20px',
     fontFamily: '"Poppins", "Heebo", sans-serif',
-    direction: 'rtl',
-    textAlign: 'right',
+    direction: 'ltl',
+    textAlign: 'left',
   },
   movieItem: {
     backgroundColor: '#fff',
@@ -477,7 +477,7 @@ const styles = {
   },
   star: {
     fontSize: '1.5rem',
-    marginRight: '2px',
+    marginleft: '2px',
   },
   ratingNumber: {
     marginLeft: '10px',

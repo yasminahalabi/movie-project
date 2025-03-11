@@ -394,17 +394,17 @@ const MoviesList = () => {
   return (
     <div className="pageContainer">
       <div className="headerSection">
-        <h1 className="header">ספריית הסרטים שלי</h1>
+        <h1 className="header">Movies List</h1>
         <div className="statsBar">
           <div className="statItem">
             <span className="statValue">{list?.length || 0}</span>
-            <span className="statLabel">סרטים בספרייה</span>
+            <span className="statLabel">Movies In The List </span>
           </div>
           <Link to="/add-movie" className="addButton">
             <span className="addButtonIcon">+</span>
-            הוסף סרט חדש
+            Add New Movie
           </Link>
-          <Link to="/favorite" className="favoritesButton">❤️ סרטים שאהבתי</Link>
+          <Link to="/favorite" className="favoritesButton">Favorite Movies❤️ </Link>
         </div>
       </div>
 
@@ -429,7 +429,7 @@ const MoviesList = () => {
                   className="movieImage" 
                 />
                 <div className={`imageOverlay ${isHovered === movie.id ? 'showOverlay' : ''}`}>
-                  <span className="viewDetailsButton">צפה בפרטים</span>
+                  <span className="viewDetailsButton">View Details</span>
                 </div>
               </div>
             </Link>
@@ -440,7 +440,7 @@ const MoviesList = () => {
 
               {/* כפתורי פעולות */}
               <div className="actionsContainer">
-                <Link to={`/edit/${movie.id}`} className="updateButton">📝 עדכן</Link>
+                <Link to={`/edit/${movie.id}`} className="updateButton">update📝</Link>
                 {/* כפתור אהבה */}
                 <button
                   className={`favoriteButton ${movie.is_favorite ? 'favorite' : ''}`}
@@ -453,7 +453,7 @@ const MoviesList = () => {
                   className="softDeleteButton"
                   onClick={() => softDeleteMovie.mutate(movie.id)}
                 >
-                  🗑️ מחיקה רכה
+                  Soft Delete🗑️  
                 </button>
 
                 {showDeleteConfirm === movie.id ? (
@@ -462,13 +462,13 @@ const MoviesList = () => {
                       className="deleteButton"
                       onClick={() => permanentDeleteMovie.mutate(movie.id)}
                     >
-                      ❌ מחיקה מוחלטת
+                      Permanent Delete❌
                     </button>
                     <button 
                       className="cancelButton"
                       onClick={() => setShowDeleteConfirm(null)}
                     >
-                      ביטול
+                      Cancel
                     </button>
                   </>
                 ) : (
@@ -476,7 +476,7 @@ const MoviesList = () => {
                     className="deleteButton"
                     onClick={() => setShowDeleteConfirm(movie.id)}
                   >
-                    🗑️ מחק
+                    Delete 🗑️ 
                   </button>
                   
                 )}
