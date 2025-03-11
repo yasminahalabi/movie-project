@@ -4,6 +4,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import { useQuery , useMutation, useQueryClient } from '@tanstack/react-query'
+import styles from "./formstyle";
 
 const fetchGenres = async () => {
     const res = await axios.get("http://localhost:8000/genres"); // כאן צריך להיות ה-API שמחזיר את הז'אנרים
@@ -22,20 +23,65 @@ const sendNewMovie = async (movieData, isEditMode, id) => {
 };
 
 const validationSchema = Yup.object({
-    title: Yup.string().required("שדה חובה"),
-    release_date: Yup.string().required("שדה חובה"),
-    genre_ids: Yup.array().min(1, "יש לבחור לפחות ז'אנר אחד"),
-    duration: Yup.number().positive().required("שדה חובה"),
-    url_image: Yup.string().url("יש להזין כתובת URL תקינה").required("שדה חובה"),
-    description: Yup.string().required("שדה חובה"),
-    actors: Yup.string().required("שדה חובה"),
-    director: Yup.string().required("שדה חובה"),
-    language: Yup.string().required("שדה חובה"),
-    rating: Yup.number().min(0).max(10).required("שדה חובה"),
-    awards: Yup.string(),
-    age_restriction: Yup.number().min(0).required("שדה חובה"),
-    watchurl: Yup.string().url("יש להזין כתובת URL תקינה").required("שדה חובה"),
+    title: Yup.string()
+        .required("This field is required")
+        .min(2, "The title must be at least 2 characters long")
+        .max(100, "The title cannot exceed 100 characters"),
+
+    release_date: Yup.string()
+        .required("This field is required")
+        .matches(/^\d{4}-\d{2}-\d{2}$/, "The date must be in YYYY-MM-DD format"),
+
+    genre_ids: Yup.array()
+        .min(1, "At least one genre must be selected")
+        .of(Yup.number().integer().positive("Genre must be a positive number")),
+
+    duration: Yup.number()
+        .required("This field is required")
+        .positive("Duration must be a positive number")
+        .min(30, "The duration must be at least 30 minutes")
+        .max(300, "The duration cannot exceed 300 minutes"),
+
+    url_image: Yup.string()
+        .required("This field is required")
+        .url("Please enter a valid URL")
+        .matches(/\.(jpeg|jpg|png|gif)$/i, "The file must be an image (jpg, png, gif)"),
+
+    description: Yup.string()
+        .required("This field is required")
+        .min(10, "The description must be at least 10 characters long"),
+
+    actors: Yup.string()
+        .required("This field is required")
+        .matches(/^[a-zA-Z\s,]+$/, "Actor names can only contain letters and commas"),
+
+    director: Yup.string()
+        .required("This field is required")
+        .matches(/^[a-zA-Z\s]+$/, "The director's name can only contain letters"),
+
+    language: Yup.string()
+        .required("This field is required")
+        .matches(/^[a-zA-Z]+$/, "The language can only contain letters"),
+
+    rating: Yup.number()
+        .required("This field is required")
+        .min(0, "The rating must be at least 0")
+        .max(10, "The rating cannot exceed 10"),
+
+    awards: Yup.string()
+        .nullable()
+        .matches(/^[a-zA-Z\s,]*$/, "Award names can only contain letters and commas"),
+
+    age_restriction: Yup.number()
+        .required("This field is required")
+        .min(0, "Age restriction must be at least 0")
+        .max(18, "Age restriction cannot exceed 18"),
+
+    watchurl: Yup.string()
+        .required("This field is required")
+        .url("Please enter a valid URL")
 });
+
 
 const MovieForm = () => {
     const { id } = useParams();
@@ -361,112 +407,6 @@ const MovieForm = () => {
             </form>
         </div>
     );
-};
-
-
-const styles = {
-    pageContainer: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '100vh',
-        width: '100%',
-        backgroundImage: 'url("https://wallpaperbat.com/img/125814121-movie-poster-background-wallpaper.jpg")',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-    },
-    heading: {
-        color: '#fff',
-        fontSize: '32px',
-        fontWeight: 'bold',
-        marginBottom: '30px',
-        textShadow: '2px 2px 10px rgba(0,0,0,0.5)',
-    },
-    formContainer: {
-        width: '80%',
-        maxWidth: '900px',
-        padding: '30px',
-        backgroundColor: 'rgba(255, 255, 255, 0.15)',
-        backdropFilter: 'blur(10px)',
-        borderRadius: '12px',
-        boxShadow: '0 4px 15px rgba(0, 0, 0, 0.3)',
-    },
-    formField: {
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '10px',
-        marginBottom: '15px',
-    },
-    label: {
-        fontSize: '16px',
-        fontWeight: 'bold',
-        color: '#fff',
-    },
-    slider: {
-        width: '100%',
-        cursor: 'pointer',
-    },
-    checkboxGroup: {
-        display: 'flex',
-        flexWrap: 'wrap',
-        gap: '10px',
-    },
-    checkboxLabel: {
-        fontSize: '16px',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '5px',
-        background: '#fde2e4',
-        padding: '8px 12px',
-        borderRadius: '6px',
-    },
-    checkboxField: {
-        transform: 'scale(1.5)',
-    },
-    error: {
-        color: 'red',
-        fontSize: '14px',
-    },
-    messageSuccess: {
-        color: '#4CAF50',
-        fontSize: '16px',
-        fontWeight: 'bold',
-        marginBottom: '20px',
-    },
-    messageError: {
-        color: '#F44336',
-        fontSize: '16px',
-        fontWeight: 'bold',
-        marginBottom: '20px',
-    },
-    textarea: {
-        width: '100%',
-        minHeight: '120px',
-        padding: '10px',
-        borderRadius: '8px',
-        border: '1px solid rgba(255, 255, 255, 0.5)',
-        resize: 'vertical',
-        fontSize: '14px',
-        color: '#000',
-        backgroundColor: 'rgba(255, 255, 255, 0.4)',
-        backdropFilter: 'blur(5px)',
-    },
-    submitButton: {
-        width: '100%',
-        padding: '15px',
-        fontSize: '18px',
-        backgroundColor: 'rgba(255, 77, 121, 0.8)',
-        color: 'white',
-        border: 'none',
-        borderRadius: '8px',
-        cursor: 'pointer',
-        fontWeight: 'bold',
-        transition: '0.3s',
-    }
-    
-    
 };
 
 export default MovieForm;
