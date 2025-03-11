@@ -20,6 +20,9 @@ const NavBar = () => {
         <li style={styles.navItem}>
           <Link to="/genres/add" style={styles.navLink}>Add Genre</Link> 
         </li>
+        <li style={styles.navItem}>
+          <Link to="/favorite" style={styles.navLink}>Favorites</Link> 
+        </li>
       </ul>
     </nav>
   );

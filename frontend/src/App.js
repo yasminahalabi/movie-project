@@ -9,6 +9,7 @@ import NavBar from './pages/NavBar';
 import Home from './pages/Home';
 import GenresList from './pages/GenresList';
 import GenreForm from './pages/GenreForm';
+import FavoriteMovies from './pages/FavoriteMovies';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
           <Route path="/genres" element={<GenresList />} />
           <Route path="/genres/add" element={<GenreForm />} />
           <Route path="/genres/edit/:id" element={<GenreForm />} /> 
+          <Route path="/favorite" element={<FavoriteMovies />} />
       </Routes> 
     </div>
     </BrowserRouter>
