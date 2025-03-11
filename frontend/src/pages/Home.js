@@ -16,11 +16,33 @@ const Home = () => {
       .catch((err) => console.error('Error fetching movies:', err));
   }, []);
 
+  // טעינת הז'אנרים
+  useEffect(() => {
+    axios.get('http://127.0.0.1:8000/genres')
+      .then((res) => setGenres(res.data))
+      .catch((err) => console.error('Error fetching genres:', err));
+  }, []);
+
   // חיפוש בזמן אמת
   useEffect(() => {
     const search = searchTerm.toLowerCase();
-    setFilteredMovies(movies.filter((movie) => movie.title.toLowerCase().includes(search)));
-    setFilteredGenres(genres.filter((genre) => genre.name.toLowerCase().includes(search)));
+
+    setFilteredMovies(movies.filter((movie) => {
+      return (
+        movie.title.toLowerCase().includes(search) ||  // חיפוש לפי שם הסרט
+        movie.release_date.toString().includes(search) ||  // חיפוש לפי שנת יציאה
+        movie.actors.some((actor) => actor.toLowerCase().includes(search)) ||  // חיפוש לפי שחקנים
+        movie.director.toLowerCase().includes(search) ||  // חיפוש לפי במאי
+        movie.language.toLowerCase().includes(search) ||  // חיפוש לפי שפה
+        (movie.rating && movie.rating.toString().includes(search)) ||  // חיפוש לפי דירוג IMDB
+        (movie.star_rating && movie.star_rating.toString().includes(search)) ||  // חיפוש לפי דירוג כוכבים
+        movie.awards.some((award) => award.toLowerCase().includes(search)) ||  // חיפוש לפי פרסים
+        (movie.age_restriction && movie.age_restriction.toString().includes(search)) ||  // חיפוש לפי מגבלת גיל
+        movie.watchurl.toLowerCase().includes(search)  // חיפוש לפי URL לצפייה
+      );
+    }));
+
+    setFilteredGenres(genres.filter((genre) => genre.name.toLowerCase().includes(search)));  // חיפוש לפי ז'אנרים
   }, [searchTerm, movies, genres]);
 
   return (
@@ -48,9 +70,23 @@ const Home = () => {
               <div style={styles.grid}>
                 {filteredMovies.map((movie) => (
                   <Link key={movie.id} to={`/list/${movie.id}`} style={styles.card}>
-                    <img src={movie.image} alt={movie.title} style={styles.image} />
+                    <img src={movie.url_image} alt={movie.title} style={styles.image} />
                     <p style={styles.cardText}>{movie.title}</p>
                   </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* ז'אנרים תואמים */}
+          {filteredGenres.length > 0 && (
+            <div>
+              <h4 style={styles.sectionTitle}>Genres</h4>
+              <div style={styles.grid}>
+                {filteredGenres.map((genre) => (
+                  <div key={genre.id} style={styles.card}>
+                    <p style={styles.cardText}>{genre.name}</p>
+                  </div>
                 ))}
               </div>
             </div>
@@ -63,7 +99,7 @@ const Home = () => {
       <div style={styles.grid}>
         {movies.map((movie) => (
           <Link key={movie.id} to={`/list/${movie.id}`} style={styles.card}>
-            <img src={movie.image} alt={movie.title} style={styles.image} />
+            <img src={movie.url_image} alt={movie.title} style={styles.image} />
             <p style={styles.cardText}>{movie.title}</p>
           </Link>
         ))}
@@ -133,9 +169,6 @@ const styles = {
     transition: 'transform 0.3s ease',
     boxShadow: '0px 4px 10px rgba(255, 255, 255, 0.2)',
   },
-  cardHover: {
-    transform: 'scale(1.05)',
-  },
   image: {
     width: '100%',
     height: '200px',
@@ -150,4 +183,3 @@ const styles = {
 };
 
 export default Home;
-
