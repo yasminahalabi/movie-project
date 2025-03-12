@@ -13,10 +13,15 @@
     margin-bottom: 24px;
   }
   
-  .header {
+  .headerfav {
     font-size: 28px;
     margin: 0;
-    color: #333;
+    color: #f5b4d8;
+  }
+  .headerarchive{
+    font-size: 28px;
+    margin: 0;
+    color: #babcbe;
   }
   
   .backButton {
@@ -142,7 +147,7 @@
     text-align: center;
     padding: 40px;
     font-size: 18px;
-    color: #555;
+    color: #ffffff;
   }
 
 .restoreButton {

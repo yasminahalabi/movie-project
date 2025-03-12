@@ -52,7 +52,7 @@ const FavoriteMovies = () => {
   if (!movies || movies.length === 0) return (
     <div className="pageContainer">
       <div className="headerSection">
-        <h2 className="header"> Favorite Movies ❤️</h2>
+        <h2 className="headerfav"> Favorite Movies ❤️</h2>
         <Link to="/" className="backButton">🔙 BACK</Link>
       </div>
       <p className="emptyState">No favorite movies</p>
@@ -68,7 +68,7 @@ const FavoriteMovies = () => {
   return (
     <div className="pageContainer">
       <div className="headerSection">
-        <h2 className="header">Favorite Movies❤️</h2>
+        <h2 className="headerfav">Favorite Movies❤️</h2>
         <Link to="/" className="backButton">🔙 BACK</Link>
       </div>
 

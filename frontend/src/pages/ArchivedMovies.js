@@ -53,7 +53,7 @@ const ArchivedMovies = () => {
   if (!movies || movies.length === 0) return (
     <div className="pageContainer">
       <div className="headerSection">
-        <h2 className="header">Movies In Archived 🗑️</h2>
+        <h2 className="headerarchive">Movies In Archived 🗑️</h2>
         <Link to="/" className="backButton">🔙 BACK</Link>
       </div>
       <p className="emptyState">No Movies In Archived </p>
@@ -70,7 +70,7 @@ const ArchivedMovies = () => {
   return (
     <div className="pageContainer">
       <div className="headerSection">
-        <h2 className="header">Movies In Archived 🗑️</h2>
+        <h2 className="headerarchive">Movies In Archived 🗑️</h2>
         <Link to="/" className="backButton">🔙 BACK</Link>
       </div>
 

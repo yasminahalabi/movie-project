@@ -334,6 +334,7 @@ const MovieForm = () => {
                         name="age_restriction"
                         min="0"
                         max="18"
+                        placeholder="Enter age limit"
                         value={movieForm.values.age_restriction}
                         onChange={movieForm.handleChange}
                         style={styles.inputField}

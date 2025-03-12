@@ -114,7 +114,7 @@ const styles = {
       justifyContent: 'center',
       alignItems: 'center',
       height: '100vh',
-      background: 'linear-gradient(135deg, #1E1E2E, #3A3A5E)',
+      background: 'linear-gradient(135deg, #1E1E2E,rgb(80, 80, 82))',
     },
     container: {
       background: 'rgba(40, 42, 54, 0.9)',
