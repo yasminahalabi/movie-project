@@ -33,6 +33,7 @@ const validationSchema = Yup.object({
     director: Yup.string().required("Required field"),
     language: Yup.string().required("Required field"),
     rating: Yup.number().min(0).max(10).required("Required field"),
+    star_rating: Yup.number().min(1).max(5).required("Required field"),
     awards: Yup.string(),
     age_restriction: Yup.number().min(0).required("Required field"),
     watchurl: Yup.string().url("Please enter a valid URL").required("Required field"),
@@ -67,7 +68,8 @@ const MovieForm = () => {
             actors: "",
             director: "",
             language: "",
-            rating: "",
+            rating: 0.0 ,
+            star_rating: 0.0,
             awards: "",
             age_restriction: "",
             watchurl: "",
@@ -272,23 +274,42 @@ const MovieForm = () => {
                         <div style={styles.error}>{movieForm.errors.language}</div>
                     )}
                 </div>
-
+                
                 <div style={styles.formField}>
                     <label style={styles.label}>Rating: {movieForm.values.rating} ⭐</label>
                     <input
-                        type="range"
+                        type="number"
                         name="rating"
-                        min="1"
-                        max="5"
-                        step="1"
+                        min="0"
+                        max="10"
+                        step="0.1"  // לאפשר ערכים עשרוניים (float)
                         value={movieForm.values.rating}
                         onChange={movieForm.handleChange}
-                        style={styles.slider}
+                        style={styles.inputField}
                     />
                     {movieForm.errors.rating && (
                         <div style={styles.error}>{movieForm.errors.rating}</div>
                     )}
                 </div>
+
+
+                <div style={styles.formField}>
+                    <label style={styles.label}>Star Rating: {movieForm.values.star_rating} ⭐</label>
+                    <input
+                        type="range"
+                        name="star_rating"
+                        min="1"
+                        max="5"
+                        step="1"
+                        value={movieForm.values.star_rating}
+                        onChange={movieForm.handleChange}
+                        style={styles.slider}
+                    />
+                    {movieForm.errors.star_rating && (
+                        <div style={styles.error}>{movieForm.errors.star_rating}</div>
+                    )}
+                </div>
+
 
                 <div style={styles.formField}>
                     <label style={styles.label}>Awards (comma separated)</label>
