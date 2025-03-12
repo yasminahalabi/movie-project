@@ -386,7 +386,7 @@ const styles = {
     flexDirection: 'column',
     alignItems: 'center',
     padding: '30px',
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    background: 'linear-gradient(135deg,rgb(245, 224, 238) 0%,rgb(249, 196, 237) 100%)',
     color: '#fff',
     overflow: 'hidden',
     boxShadow: 'inset 0 -10px 15px -5px rgba(0, 0, 0, 0.2)',
