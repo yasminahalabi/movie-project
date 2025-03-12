@@ -9,35 +9,33 @@ const fetchFavorites = async () => {
     const { data } = await axios.get("http://localhost:8000/movies/all-favorites");
     return data;
   } catch (error) {
-    console.error("Full error response:", error.response?.data);
+    console.error("Error fetching favorite movies:", error.response?.data);
     throw error;
   }
 };
 
-const toggleFavorite = async (movie) => {
-  const newStatus = !movie.is_favorite;
-  console.log(`Toggling favorite for ${movie.title}, new status: ${newStatus}`);
-  await axios.put(`http://localhost:8000/movies/${movie.id}/favorite?is_favorite=${newStatus}`);
-  return { ...movie, is_favorite: newStatus };
+const toggleFavorite = async (movieId) => {
+  const { data } = await axios.put(`http://localhost:8000/movies/${movieId}/favorite?is_favorite=false`);
+  return data.movie;
 };
 
 const FavoriteMovies = () => {
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
+  const navigate = useNavigate(); 
+  const [selectedMovie, setSelectedMovie] = useState(null);
 
   const { data: movies, isLoading, error } = useQuery({
     queryKey: ["favoriteMovies"],
     queryFn: fetchFavorites,
   });
 
-  const mutation = useMutation({
+  const removeFavoriteMutation = useMutation({
     mutationFn: toggleFavorite,
-    onSuccess: (updatedMovie) => {
-      queryClient.setQueryData(["favoriteMovies"], (oldMovies) =>
-        oldMovies.map((movie) =>
-          movie.id === updatedMovie.id ? updatedMovie : movie
-        )
-      );
+    onSuccess: () => {
+      // רענון הנתונים לאחר הסרת סרט מהמועדפים
+      queryClient.invalidateQueries(["favoriteMovies"]);
+      queryClient.invalidateQueries(["movies"]); // רענון רשימת הסרטים הרגילה
+      setSelectedMovie(null);
     },
   });
 
@@ -45,9 +43,21 @@ const FavoriteMovies = () => {
     navigate(`/list/${movieId}`);
   };
 
+  const handleRemoveFavorite = (movieId) => {
+    removeFavoriteMutation.mutate(movieId);
+  };
+
   if (isLoading) return <p className="loadingState">Loading...</p>;
   if (error) return <p className="errorState">Error: {error.message}</p>;
-  if (!movies || movies.length === 0) return <p className="emptyState">No favorite movies</p>;
+  if (!movies || movies.length === 0) return (
+    <div className="pageContainer">
+      <div className="headerSection">
+        <h2 className="header"> Favorite Movies ❤️</h2>
+        <Link to="/" className="backButton">🔙 BACK</Link>
+      </div>
+      <p className="emptyState">No favorite movies</p>
+    </div>
+  );
 
   // Determine CSS class based on number of movies
   const gridClassName = movies.length <= 1 
@@ -55,14 +65,13 @@ const FavoriteMovies = () => {
     : movies.length <= 3 
       ? "movieGrid fewMovies" 
       : "movieGrid";
-
   return (
     <div className="pageContainer">
       <div className="headerSection">
         <h2 className="header">Favorite Movies❤️</h2>
-        <Link to="/" className="backButton">🔙 BACK </Link>
+        <Link to="/" className="backButton">🔙 BACK</Link>
       </div>
-      
+
       <div className={gridClassName}>
         {movies.map((movie) => (
           <div key={movie.id} className="movieCard">
@@ -82,13 +91,14 @@ const FavoriteMovies = () => {
             <div className="movieInfo">
               <h3 className="movieTitle">{movie.title}</h3>
               <button
-                className={`favoriteButton ${movie.is_favorite ? "active" : ""}`}
+                className="favoriteButton"
                 onClick={(e) => {
-                  e.stopPropagation();
-                  mutation.mutate(movie);
+                  e.stopPropagation(); // מניעת התפשטות אירוע הלחיצה
+                  handleRemoveFavorite(movie.id);
                 }}
+                disabled={removeFavoriteMutation.isLoading}
               >
-                {movie.is_favorite ? " Remove from favorites 💔" : " Add to favorites ❤️"}
+                {removeFavoriteMutation.isLoading && removeFavoriteMutation.variables === movie.id ?  " Remove from favorites 💔" : " Add to favorites ❤️"}
               </button>
             </div>
           </div>

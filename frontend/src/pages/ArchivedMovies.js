@@ -48,15 +48,15 @@ const ArchivedMovies = () => {
     return date.toLocaleString();
   };
 
-  if (isLoading) return <p className="loadingState">טוען סרטים שנמחקו...</p>;
-  if (error) return <p className="errorState">שגיאה: {error.message}</p>;
+  if (isLoading) return <p className="loadingState">Loading ...</p>;
+  if (error) return <p className="errorState">Error: {error.message}</p>;
   if (!movies || movies.length === 0) return (
     <div className="pageContainer">
       <div className="headerSection">
-        <h2 className="header">סרטים שנמחקו 🗑️</h2>
-        <Link to="/" className="backButton">🔙 חזרה</Link>
+        <h2 className="header">Movies In Archived 🗑️</h2>
+        <Link to="/" className="backButton">🔙 BACK</Link>
       </div>
-      <p className="emptyState">אין סרטים שנמחקו במערכת</p>
+      <p className="emptyState">No Movies In Archived </p>
     </div>
   );
 
@@ -70,8 +70,8 @@ const ArchivedMovies = () => {
   return (
     <div className="pageContainer">
       <div className="headerSection">
-        <h2 className="header">סרטים שנמחקו 🗑️</h2>
-        <Link to="/" className="backButton">🔙 חזרה</Link>
+        <h2 className="header">Movies In Archived 🗑️</h2>
+        <Link to="/" className="backButton">🔙 BACK</Link>
       </div>
 
       <div className={gridClassName}>
@@ -85,7 +85,7 @@ const ArchivedMovies = () => {
                 style={{ opacity: 0.7 }} // תמונה עמומה יותר לסרטים שנמחקו
               />
               <div className="deletedOverlay">
-                <span>נמחק בתאריך: {formatDeletedDate(movie.deleted_on)}</span>
+                <span>Deleted On  : {formatDeletedDate(movie.deleted_on)}</span>
               </div>
             </div>
             <div className="movieInfo">
@@ -96,8 +96,8 @@ const ArchivedMovies = () => {
                 disabled={restoreMutation.isLoading}
               >
                 {restoreMutation.isLoading && restoreMutation.variables === movie.id
-                  ? "משחזר..." 
-                  : "שחזר סרט 🔄"}
+                  ? "Restoring..."
+                  : "Restoring movie 🔄"}
               </button>
             </div>
           </div>
