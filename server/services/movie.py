@@ -3,7 +3,7 @@ from datetime import datetime
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from models.Movies import Movie
-from models.Genres import Genre
+from models.Genres import Genre  
 
  
 def get_movies_from_db(db:Session):
